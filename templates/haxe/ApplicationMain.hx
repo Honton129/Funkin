@@ -26,10 +26,6 @@ class ApplicationMain
 {
   #if !macro
 
-  #if (windows && cpp)
-  public static var systemDarkMode:Bool = false;
-  #end
-
   public static function main():Void
   {
     #if (windows && cpp)
@@ -38,9 +34,6 @@ class ApplicationMain
 
     // Disable Windows error reporting (avoids sending bug reports to Microsoft).
     funkin.external.windows.WinAPI.disableErrorReporting();
-
-    // Whether the system is currently using dark mode.
-    systemDarkMode = funkin.external.windows.WinAPI.isSystemDarkMode();
     #end
 
     lime.system.System.__registerEntryPoint("::APP_FILE::", create);
@@ -76,19 +69,10 @@ class ApplicationMain
 
     var app = new openfl.display.Application(appMeta);
 
-    #if ((windows && cpp) || linux)
+    #if linux
     app.onCreateWindow.add(function(window:lime.ui.Window):Void
     {
-      #if (windows && cpp)
-      if (systemDarkMode)
-      {
-        window.setDarkMode(systemDarkMode);
-      }
-      #end
-
-      #if linux
       window.setIcon(new ApplicationIcon());
-      #end
     });
     #end
 
@@ -150,6 +134,15 @@ class ApplicationMain
       lime.system.System.__parseArguments(attributes);
       #end
     }
+
+    #if mobile
+    final orientation:lime.tools.Orientation = ::orientation::;
+
+    if (orientation == PORTRAIT)
+      lime.system.System.setHint("ORIENTATIONS", "Portrait PortraitUpsideDown");
+    else if (orientation == LANDSCAPE)
+      lime.system.System.setHint("ORIENTATIONS", "LandscapeLeft LandscapeRight");
+    #end
 
     app.createWindow(attributes);
     ::end::

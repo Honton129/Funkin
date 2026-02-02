@@ -7,13 +7,11 @@ import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
+import openfl.Lib;
 
 /**
  * A debug overlay showing useful info.
  */
-#if cpp
-@:access(lime._internal.backend.native.NativeCFFI)
-#end
 class FunkinDebugDisplay extends Sprite
 {
   static final UPDATE_DELAY:Int = 100;
@@ -147,15 +145,9 @@ class FunkinDebugDisplay extends Sprite
     addChild(infoDisplay);
   }
 
-  override function __enterFrame(deltaTime:Int):Void
+  override function __enterFrame(deltaTime:Float):Void
   {
-    #if cpp
-    final currentTime:Float = lime._internal.backend.native.NativeCFFI.lime_sdl_get_ticks();
-    #elseif html5
-    final currentTime:Float = js.Browser.window.performance.now();
-    #else
-    final currentTime:Float = haxe.Timer.stamp() * 1000;
-    #end
+    final currentTime:Float = Lib.getTimer();
 
     times.push(currentTime);
 
@@ -240,20 +232,20 @@ class FunkinDebugDisplay extends Sprite
     }
   }
 
-  function updateFPSGraph(?currentFPS:Int = 0):Void
+  function updateFPSGraph():Void
   {
     fpsGraph.maxValue = FlxG.drawFramerate;
-    fpsGraph.update(times.length);
+    fpsGraph.update(currentFPS);
   }
 
   #if !html5
-  function updateGcMemGraph(?currentFPS:Int = 0):Void
+  function updateGcMemGraph():Void
   {
     gcMemGraph.maxValue = gcMemPeak;
     gcMemGraph.update(gcMem);
   }
 
-  function updateTaskMemGraph(?currentFPS:Int = 0):Void
+  function updateTaskMemGraph():Void
   {
     if (taskMemGraph != null)
     {

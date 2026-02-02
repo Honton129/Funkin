@@ -403,11 +403,6 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       gameNotchPosition *= scale;
       gameNotchSize *= scale;
     }
-
-    #if ios
-    gameNotchPosition /= 2;
-    gameNotchSize /= 2;
-    #end
   }
   #end
 

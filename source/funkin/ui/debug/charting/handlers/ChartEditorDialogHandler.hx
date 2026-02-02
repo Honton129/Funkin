@@ -1251,7 +1251,7 @@ class ChartEditorDialogHandler
     importBox.onClick = function(_)
     {
       // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
-      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', #if !mac fileFilter ?? [] #else [] #end, function(selectedFile:SelectedFileInfo)
+      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', fileFilter ?? [], function(selectedFile:SelectedFileInfo)
       {
         if (selectedFile != null && selectedFile.bytes != null)
         {

@@ -45,8 +45,13 @@ class Preferences
     var save:Save = Save.instance;
     save.options.framerate = value;
     Save.system.flush();
-    FlxG.updateFramerate = value;
-    FlxG.drawFramerate = value;
+
+    if (!unlockedFramerate)
+    {
+      FlxG.updateFramerate = value;
+      FlxG.drawFramerate = value;
+    }
+
     return value;
     #end
   }
@@ -364,9 +369,7 @@ class Preferences
   {
     if (value != Save.instance.options.unlockedFramerate)
     {
-      #if web
       toggleFramerateCap(value);
-      #end
     }
 
     var save:Save = Save.instance;
@@ -485,9 +488,7 @@ class Preferences
     setDebugDisplayMode(Preferences.debugDisplay);
     setDebugDisplayBGOpacity(Preferences.debugDisplayBGOpacity / 100);
 
-    #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
-    #end
 
     #if mobile
     // Apply the allowScreenTimeout setting.
@@ -500,6 +501,9 @@ class Preferences
     #if web
     var framerateFunction = unlocked ? unlockedFramerateFunction : lockedFramerateFunction;
     untyped js.Syntax.code("window.requestAnimationFrame = framerateFunction;");
+    #else
+    FlxG.drawFramerate = unlocked ? 0 : framerate;
+    FlxG.updateFramerate = unlocked ? 0 : framerate;
     #end
   }
 

@@ -7,6 +7,7 @@ import funkin.external.android.ScreenUtil as NativeScreenUtil;
 #end
 import lime.math.Rectangle;
 import lime.system.System;
+import lime.app.Application;
 
 /**
  * A Utility class to get mobile screen related informations.
@@ -21,6 +22,9 @@ class ScreenUtil
   public static function getNotchRect():Rectangle
   {
     final notchRect:Rectangle = new Rectangle();
+
+    notchRect.x = 0.0;
+    notchRect.y = 0.0;
 
     #if android
     final rectDimensions:Array<Array<Float>> = [[], [], [], []];
@@ -59,22 +63,17 @@ class ScreenUtil
     var bottomInset:Float = -1;
     var deviceWidth:Float = -1;
     var deviceHeight:Float = -1;
-    var displayOrientation:DisplayOrientation = System.getDisplayOrientation(0);
 
     NativeScreenUtil.getSafeAreaInsets(cpp.RawPointer.addressOf(topInset), cpp.RawPointer.addressOf(bottomInset), cpp.RawPointer.addressOf(leftInset),
       cpp.RawPointer.addressOf(rightInset));
-
     NativeScreenUtil.getScreenSize(cpp.RawPointer.addressOf(deviceWidth), cpp.RawPointer.addressOf(deviceHeight));
-
-    notchRect.x = 0;
-    notchRect.y = 0.0;
 
     // Calculate the rectangle dimensions for the notch
     // Note: iOS only spits out *insets* for "safe areas", so we can only get a broad position for the notch
     // left + right insets are the same, so we can use either
     // Note: *inset* is the distance from the edge of the screen where a safe area gets defined
     // see: https://developer.apple.com/documentation/uikit/uiview/safeareainsets
-    switch (displayOrientation)
+    switch (System.getDisplayOrientation(Application.current.window.display))
     {
       case DISPLAY_ORIENTATION_LANDSCAPE: // landscape
         notchRect.width = leftInset + rightInset;
